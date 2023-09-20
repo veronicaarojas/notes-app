@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, {useState, useEffect} from "react"
 import Sidebar from "./components/Sidebar"
 import Editor from "./components/Editor"
 import { data } from "./data"
@@ -7,10 +7,15 @@ import {nanoid} from "nanoid"
 import './App.css'
 
 export default function App() {
-    const [notes, setNotes] = useState([])
+    const [notes, setNotes] = useState(JSON.parse(
+      localStorage.getItem('notes')) || []);
     const [currentNoteId, setCurrentNoteId] = useState(
         (notes[0] && notes[0].id) || ""
     )
+
+    useEffect(() => {
+      localStorage.setItem('notes', JSON.stringify(notes));
+    }, [notes])
     
     function createNewNote() {
         const newNote = {
@@ -19,6 +24,7 @@ export default function App() {
         }
         setNotes(prevNotes => [newNote, ...prevNotes])
         setCurrentNoteId(newNote.id)
+        
     }
     
     function updateNote(text) {
