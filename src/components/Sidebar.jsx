@@ -34,6 +34,7 @@ export default function Sidebar(props) {
                 <h4 className="text-snippet">{note.body.split(/[\r\n]+/)[0] ? note.body.split(/[\r\n]+/)[0] : "Blank Note"}</h4>
                 { hoveredNotes[note.id] === true &&
                 <button className="delete--button"
+                onClick={() => props.deleteNote(note.id)}
                 >
                 <FontAwesomeIcon icon={faTrash} />
                 </button> }

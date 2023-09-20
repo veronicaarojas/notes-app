@@ -43,6 +43,12 @@ export default function App() {
 
         
     }
+
+    function deleteNote(id) {
+      const updatedNotes = notes.filter((oldNote) => oldNote.id !== id );
+      setNotes(updatedNotes);
+
+    }
     
     function findCurrentNote() {
         return notes.find(note => {
@@ -65,6 +71,7 @@ export default function App() {
                     currentNote={findCurrentNote()}
                     setCurrentNoteId={setCurrentNoteId}
                     newNote={createNewNote}
+                    deleteNote={deleteNote}
                 />
                 {
                     currentNoteId && 
