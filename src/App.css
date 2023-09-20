@@ -138,3 +138,11 @@ button:focus {
   align-items: center;
   background-color: whitesmoke;
 }
+
+.delete--button {
+  margin: 10px;
+  background-color: black ;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
