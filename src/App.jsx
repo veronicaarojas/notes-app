@@ -3,8 +3,8 @@ import Sidebar from "./components/Sidebar"
 import Editor from "./components/Editor"
 import Split from "react-split"
 import './App.css'
-import { onSnapshot, addDoc } from "firebase/firestore";
-import { notesCollection } from "../Firebase"
+import { onSnapshot, addDoc, doc, deleteDoc } from "firebase/firestore";
+import { notesCollection, db } from "../Firebase"
 
 export default function App() {
     const [notes, setNotes] = useState([]);
@@ -55,9 +55,9 @@ export default function App() {
         
     }
 
-    function deleteNote(id) {
-      const updatedNotes = notes.filter((oldNote) => oldNote.id !== id );
-      setNotes(updatedNotes);
+    async function deleteNote(id) {
+      const docRef = doc(db, "notes", id);
+      await deleteDoc(docRef);
 
     }
     
