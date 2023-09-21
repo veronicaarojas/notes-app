@@ -3,14 +3,13 @@ import Sidebar from "./components/Sidebar"
 import Editor from "./components/Editor"
 import Split from "react-split"
 import './App.css'
-import { onSnapshot, addDoc, doc, deleteDoc } from "firebase/firestore";
+import { onSnapshot, addDoc, doc, deleteDoc, setDoc } from "firebase/firestore";
 import { notesCollection, db } from "../Firebase"
 
 export default function App() {
     const [notes, setNotes] = useState([]);
-    const [currentNoteId, setCurrentNoteId] = useState(
-        (notes[0]?.id) || ""
-    )
+    const [currentNoteId, setCurrentNoteId] = useState("");
+
 
     const currentNote =  
     notes.find(note => note.id === currentNoteId) 
@@ -28,6 +27,12 @@ export default function App() {
       //remove listener to avoid memory leak
       return unsubscribe
     }, []);
+
+    useEffect(() => {
+      if(!currentNoteId) {
+        setCurrentNoteId(notes[0]?.id);
+      }
+    }, [notes]);
     
    async function createNewNote() {
         const newNote = {
@@ -38,19 +43,9 @@ export default function App() {
         
     }
     
-    function updateNote(text) {
-       
-
-        setNotes(oldNotes => {
-          const updatedNoteList = [];
-          for(let i = 0; i < oldNotes.length; i++) {
-            if(oldNotes[i].id === currentNoteId) {
-            updatedNoteList.unshift({...oldNotes[i], body: text});
-          } else {
-            updatedNoteList.push(oldNotes[i]);
-          }} 
-          return updatedNoteList;
-        });
+    async function updateNote(text) {
+      const docRef = doc(db, "notes", currentNoteId);
+      await setDoc(docRef, { body: text }, {merge: true});
 
         
     }
@@ -80,14 +75,12 @@ export default function App() {
                     newNote={createNewNote}
                     deleteNote={deleteNote}
                 />
-                {
-                    currentNoteId && 
-                    notes.length > 0 &&
+                
                     <Editor 
                         currentNote={currentNote} 
                         updateNote={updateNote} 
                     />
-                }
+                
             </Split>
             :
             <div className="no-notes">
