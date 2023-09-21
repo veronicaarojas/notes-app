@@ -2,12 +2,12 @@ import React, {useState, useEffect} from "react"
 import Sidebar from "./components/Sidebar"
 import Editor from "./components/Editor"
 import Split from "react-split"
-import {nanoid} from "nanoid"
 import './App.css'
+import { onSnapshot } from "firebase/firestore";
+import { notesCollection } from "../Firebase"
 
 export default function App() {
-    const [notes, setNotes] = useState( () => JSON.parse(
-       localStorage.getItem('notes')) || []);
+    const [notes, setNotes] = useState([]);
     const [currentNoteId, setCurrentNoteId] = useState(
         (notes[0]?.id) || ""
     )
@@ -17,8 +17,17 @@ export default function App() {
     || notes[0]
 
     useEffect(() => {
-      localStorage.setItem('notes', JSON.stringify(notes));
-    }, [notes])
+      //websocket listener 
+      const unsubscribe = onSnapshot(notesCollection, function(snapshot) {
+        const notesArr = snapshot.docs.map(doc => ({
+          ...doc.data(),
+          id: doc.id
+        }))
+        setNotes(notesArr);
+      })
+      //remove listener to avoid memory leak
+      return unsubscribe
+    }, []);
     
     function createNewNote() {
         const newNote = {
@@ -53,11 +62,7 @@ export default function App() {
 
     }
     
-    function findCurrentNote() {
-        return notes.find(note => {
-            return note.id === currentNoteId
-        }) || notes[0]
-    }
+  
     
     return (
         <main>
