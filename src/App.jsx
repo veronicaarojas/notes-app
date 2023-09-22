@@ -15,6 +15,8 @@ export default function App() {
     notes.find(note => note.id === currentNoteId) 
     || notes[0]
 
+    const sortedNotes = notes.sort((a, b) => b.updatedAt - a.updatedAt);
+
     useEffect(() => {
       //websocket listener 
       const unsubscribe = onSnapshot(notesCollection, function(snapshot) {
@@ -33,6 +35,8 @@ export default function App() {
         setCurrentNoteId(notes[0]?.id);
       }
     }, [notes]);
+
+    
     
    async function createNewNote() {
         const newNote = {
@@ -51,7 +55,6 @@ export default function App() {
         { body: text, updatedAt: Date.now() }, 
         {merge: true});
 
-        
     }
 
     async function deleteNote(id) {
@@ -73,7 +76,7 @@ export default function App() {
                 className="split"
             >
                 <Sidebar
-                    notes={notes}
+                    notes={sortedNotes}
                     currentNote={currentNote}
                     setCurrentNoteId={setCurrentNoteId}
                     newNote={createNewNote}
