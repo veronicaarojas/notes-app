@@ -9,6 +9,7 @@ import { notesCollection, db } from "../Firebase"
 export default function App() {
     const [notes, setNotes] = useState([]);
     const [currentNoteId, setCurrentNoteId] = useState("");
+    const [ tempNoteText, setTempNoteText ] = useState("");
 
 
     const currentNote =  
@@ -35,6 +36,20 @@ export default function App() {
         setCurrentNoteId(notes[0]?.id);
       }
     }, [notes]);
+
+    useEffect(() => {
+        setTempNoteText(currentNote?.body);
+    }, [currentNote]);
+
+    useEffect(() => {
+      const timeoutId = setTimeout(() => {
+        if(tempNoteText !== currentNote.body) {
+        updateNote(tempNoteText)
+        }
+      }, 500)
+      return () => clearTimeout(timeoutId)
+
+    }, [tempNoteText]);
 
     
     
@@ -84,8 +99,8 @@ export default function App() {
                 />
                 
                     <Editor 
-                        currentNote={currentNote} 
-                        updateNote={updateNote} 
+                        tempNoteText={tempNoteText} 
+                        setTempNoteText={setTempNoteText} 
                     />
                 
             </Split>
